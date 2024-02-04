@@ -1,7 +1,7 @@
 OBJS = sand-sim.c
 
 BIN_NAME = sand-sim.bin
-CFLAGS = -w 
+CFLAGS = -w
 LFLAGS = -lSDL2
 CC = gcc
 
