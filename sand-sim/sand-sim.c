@@ -7,6 +7,9 @@ const int GRAIN_COUNT_HEIGHT = 50;
 
 const int MS_PER_FRAME = 16;
 
+const uint8_t sand_colours_count = 5;
+const uint32_t sand_colours[] = { 0xebb434ff, 0xedc76dff, 0xe3c98aff, 0xffba1cff, 0xf0b93aff };
+
 int map_physical_to_sim_coord(int val){
     return val / GRAIN_RENDER_SIZE;
 }
@@ -48,7 +51,8 @@ void handle_input(struct button_state* b_state, uint8_t sim_space[GRAIN_COUNT_HE
         int sim_col = map_physical_to_sim_coord(b_state -> mouse_x);
 
         if(sim_row >= 0 && sim_row < GRAIN_COUNT_HEIGHT && sim_col >= 0 && sim_col < GRAIN_COUNT_WIDTH){
-            sim_space[sim_row][sim_col] = 1;
+            uint8_t grain_colour = rand() % sand_colours_count;
+            sim_space[sim_row][sim_col] = grain_colour;
         }
     }
 
@@ -130,15 +134,22 @@ void do_render(struct sim_visuals* s_visual, uint8_t sim_space[GRAIN_COUNT_HEIGH
 
     // loop over sim space, drawing sand coloured rectangles anywhere than currently has a '1' in it.
     SDL_Rect rect;
-    SDL_SetRenderDrawColor(s_visual -> renderer, 214, 208, 141, 255);
 
     for(int row = 0; row < GRAIN_COUNT_HEIGHT; row++){
         for(int col = 0; col < GRAIN_COUNT_WIDTH; col++){
-            if( sim_space[row][col] == 1 ){
+            if( sim_space[row][col] != 0 ){
+                uint8_t grain_colour = sim_space[row][col];
                 rect.h = GRAIN_RENDER_SIZE;
                 rect.w = GRAIN_RENDER_SIZE;
                 rect.x = GRAIN_RENDER_SIZE * col;
                 rect.y = GRAIN_RENDER_SIZE * row;
+                uint32_t sand_colour = sand_colours[grain_colour];
+                SDL_SetRenderDrawColor(
+                    s_visual -> renderer, 
+                    (sand_colour >> 24), 
+                    ((sand_colour >> 16) & 0xff), 
+                    ((sand_colour >> 8) & 0xff), 
+                    (sand_colour & 0xff));
                 SDL_RenderFillRect(s_visual -> renderer, &rect);
             }
         }

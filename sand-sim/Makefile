@@ -7,3 +7,6 @@ CC = gcc
 
 all : $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) $(LFLAGS) -o $(BIN_NAME)
+
+run: $(BIN_NAME)
+	./$(BIN_NAME)
